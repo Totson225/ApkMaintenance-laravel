@@ -26,7 +26,7 @@ class AppareilsController extends Controller
             }
 
             // pagination
-            $appareils = $query->paginate(7);
+            $appareils = $query->paginate(5);
 
             // vue retour
             return view('appareils.index', compact('appareils'));

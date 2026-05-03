@@ -28,7 +28,7 @@ class MaterielsController extends Controller
             }
 
             // pagination
-            $materiels = $query->paginate(7);
+            $materiels = $query->paginate(5);
 
             // vue retour
             return view('materiels.index', compact('materiels'));

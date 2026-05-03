@@ -1,116 +1,142 @@
 @extends('layouts.app')
 
+@section('title', 'AppliMaintenance | Technicien')
+
 @section('content')
-    <div class="d-none d-print-block text-center mb-4">
-        <h2>Rapport du technicien</h2>
-        <hr>
-    </div>
-    <div class="container py-4">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fw-bold text-primary">
-                    <i class="bi bi-pencil-square me-2"></i>Détails du technicien
-                </h5>
-                <a href="{{ route('interventions.index') }}" class="btn btn-sm btn-primary">Retour</a>
+    {{-- En-tête pour l'impression uniquement --}}
+    <div class="d-none d-print-block">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+            <div>
+                <h2 class="text-primary fw-bold mb-0">Appli Maintenance</h2>
+                <p class="text-muted small">Système de Gestion des Interventions</p>
             </div>
-            
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <tbody>
-                            <tr>
-                                <th class="bg-light" style="width: 30%;">NOM TECHNICIEN</th>
-                                <td>{{ $technicien->nom_techniciens }}</td>
-                            </tr>
-                            <tr>
-                                <th class="bg-light">PRENOM TECHNICIEN</th>
-                                <td>{{ $technicien->prenom_techniciens }}</td>
-                            </tr>
-                            <tr>
-                                <th class="bg-light">TELEPHONE TECHNICIEN</th>
-                                <td>{{ $technicien->telephone_technicien }}</td>
-                            </tr>
-                              <tr>
-                                <th class="bg-light">SEXE TECHNICIEN</th>
-                                <td>{{ $technicien->sexe_techniciens }}</td>
-                            </tr> 
-                            <tr>
-                                <th class="bg-light">SPECIALITEE TECHNICIEN</th>
-                                <td>{{ $technicien->specialite_technicien }}</td>
-                            </tr>
-                              <tr>
-                                <th class="bg-light">EMAIL TECHNICIEN</th>
-                                <td>{{ $technicien->email_technicien }}</td>
-                            </tr> 
-                              <tr>
-                                <th class="bg-light">STATUT TECHNICIEN</th>
-                                <td>{{ $technicien->statut_tech }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    @if($technicien->created_at)
-                        <div class="mt-3">
-                            <p class="text-muted fst-italic">
-                                Enregistré le : {{ $technicien->created_at->format('d/m/Y à H:i') }}
-                            </p>
+            <div class="text-end">
+                <h4 class="mb-0">FICHE TECHNIQUE</h4>
+                <p class="small text-muted">Généré le {{ date('d/m/Y H:i') }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container py-4">
+        {{-- Barre d'actions (masquée à l'impression) --}}
+        <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+            <h4 class="fw-bold text-dark mb-0">
+                </i>Détails de l'Expert
+            </h4>
+            <div class="d-flex gap-2">
+                <a href="{{ route('techniciens.index') }}" class="btn btn-light rounded-pill shadow-sm">
+                    <i class="bi bi-arrow-left me-2"></i>Retour
+                </a>
+                <button onclick="window.print()" class="btn btn-primary rounded-pill shadow-sm">
+                    <i class="bi bi-printer-fill me-2"></i>Imprimer le rapport
+                </button>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 20px;">
+            <div class="row g-0">
+                {{-- Volet Gauche : Identité --}}
+                <div class="col-md-4 bg-primary text-white p-4 p-lg-5 text-center d-flex flex-column justify-content-center">
+                    <div class="avatar-placeholder mx-auto mb-3 shadow-lg d-flex align-items-center justify-content-center">
+                        <span class="display-4 fw-bold">{{ strtoupper(substr($technicien->nom_techniciens, 0, 1)) }}</span>
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ $technicien->nom_techniciens }}</h3>
+                    <p class="lead opacity-75 mb-3">{{ $technicien->prenom_techniciens }}</p>
+                    
+                    <div class="mt-2">
+                        @if($technicien->statut_tech == 'Disponible')
+                            <span class="badge bg-success py-2 px-4 rounded-pill shadow-sm">
+                                <i class="bi bi-check-circle-fill me-2"></i>Disponible
+                            </span>
+                        @else
+                            <span class="badge bg-warning text-dark py-2 px-4 rounded-pill shadow-sm">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>En intervention
+                            </span>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Volet Droit : Détails Techniques --}}
+                <div class="col-md-8 p-4 p-lg-5 bg-white">
+                    <h5 class="text-muted small fw-bold text-uppercase border-bottom pb-2 mb-4">Informations Professionnelles</h5>
+                    
+                    <div class="row g-4">
+                        <div class="col-sm-6">
+                            <label class="text-muted small d-block">Spécialité</label>
+                            <span class="fw-bold text-dark fs-5"><i class="bi bi-gear-wide-connected text-primary me-2"></i>{{ $technicien->specialite_technicien }}</span>
                         </div>
-                    @endif
-                    <div class="d-flex justify-content-end mb-3 no-print">
-                        <button onclick="window.print()" class="btn btn-primary shadow-sm">
-                            <i class="bi bi-printer-fill me-2"></i> Imprimer la fiche
-                        </button>
+                        
+                        <div class="col-sm-6">
+                            <label class="text-muted small d-block">Contact Téléphonique</label>
+                            <span class="fw-bold text-dark fs-5"><i class="bi bi-telephone-fill text-primary me-2"></i>{{ $technicien->telephone_technicien }}</span>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="text-muted small d-block">Genre</label>
+                            <span class="fw-bold text-dark fs-6">{{ $technicien->sexe_techniciens }}</span>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="text-muted small d-block">Adresse Email</label>
+                            <span class="fw-bold text-dark fs-6 text-break">{{ $technicien->email_technicien ?? 'N/A' }}</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 p-3 bg-light rounded-3 d-flex align-items-center">
+                        <i class="bi bi-calendar-check text-primary fs-4 me-3"></i>
+                        <div>
+                            <small class="text-muted d-block">Membre de l'équipe depuis le</small>
+                            <span class="fw-bold">{{ $technicien->created_at ? $technicien->created_at->format('d F Y') : 'Date inconnue' }}</span>
+                        </div>
+                    </div>
+
+                    {{-- Pied de page pour impression --}}
+                    <div class="d-none d-print-block mt-5 pt-5 border-top">
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <p class="small text-muted">Signature du Technicien</p>
+                                <div style="height: 60px;"></div>
+                                <p class="small">_______________________</p>
+                            </div>
+                            <div class="col-6">
+                                <p class="small text-muted">Cachet de la Direction</p>
+                                <div style="height: 60px;"></div>
+                                <p class="small">_______________________</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     <style>
-            @media print {
-        /* Masquer navigation, bouton imprimer et footer */
-        .no-print, 
-        nav, 
-        .btn, 
-        footer, 
-        .sidebar {
-            display: none !important;
+        .avatar-placeholder {
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 4px solid white;
+            border-radius: 30px;
         }
-            @page {
-                    margin: 1.5cm; 
-                }
+
+        /* Optimisation Impression */
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; padding-top: 0 !important; }
+            .container { max-width: 100% !important; width: 100% !important; }
+            .card { border: 1px solid #eee !important; box-shadow: none !important; }
+            .bg-primary { 
+                background-color: #f8f9fa !important; 
+                color: black !important; 
+                border-right: 1px solid #eee !important;
+            }
+            .avatar-placeholder { border-color: #ccc !important; color: #333 !important; }
+            .text-white { color: black !important; }
+            .opacity-75 { opacity: 1 !important; }
             
-                /* fais descendre */
-                body {
-                background-color: white !important;
-                justify-content: center;
-                padding-top: 3cm; 
-            }
-            .container {
-                width: 100% !important;
-                margin: 0 auto !important;
-             }
-
-        /* Box toute la largeur */
-        .card {
-            border: none !important;
-            box-shadow: none !important;
+            /* Forcer les couleurs de fond pour les badges */
+            .badge { border: 1px solid #ccc !important; color: black !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
-
-        .table {
-                border: 1px solid #dee2e6 !important;
-                width: 100% !important;
-            }
-
-        .container {
-            width: 100% !important;
-            max-width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-
-        /* Affichage couleurs  */
-        body {
-            -webkit-print-color-adjust: exact;
-        }
-    } 
     </style>
 @endsection

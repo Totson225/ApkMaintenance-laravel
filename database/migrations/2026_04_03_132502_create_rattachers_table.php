@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_Intervtion'); 
             $table->unsignedBigInteger('Id_materiel');
 
-            $table->date('Deb_intervention');
+            $table->date('Deb_intervention')->nullable();;
             $table->date('Fin_intervention')->nullable();
 
             $table->foreign('id_Intervtion')->references('id_Intervtion')->on('interventions')->onDelete('cascade');

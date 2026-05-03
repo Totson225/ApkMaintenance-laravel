@@ -3,80 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AppliMaintenance</title>
+    <title>AppliMaintenance | Accuiel</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="icon" type="image/x-icon" href="{{ asset('image/AppMaint.jpg') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
+<style>
+    :root {
+        --primary: #0d6efd;
+        --primary-soft: rgba(13, 110, 253, 0.1);
+        --glass-bg: rgba(255, 255, 255, 0.65);
+        --glass-border: rgba(255, 255, 255, 0.4);
+        --card-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+        --swipe-gradient: linear-gradient(
+            120deg, 
+            rgba(255, 255, 255, 0) 0%, 
+            rgba(13, 110, 253, 0.15) 35%, 
+            rgba(255, 255, 255, 0) 70%
+        );
+        --swipe-speed: 15s;
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: #f8fafc;
+        overflow-x: hidden;
+        min-height: 100vh;
+    }
+
+    /* Animation de fond */
+    body::before {
+        content: "";
+        position: fixed;
+        top: -50%; left: -50%; 
+        width: 200%; height: 200%;
+        z-index: -2;
+        background: var(--swipe-gradient);
+        animation: smoothSwipe var(--swipe-speed) ease-in-out infinite alternate;
+        pointer-events: none;
+    }
+
+    @keyframes smoothSwipe {
+        from { transform: rotate(0deg) translateX(-10%); }
+        to { transform: rotate(5deg) translateX(10%); }
+    }
+
+    .navbar {
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        background: rgba(255, 255, 255, 0.7);
+        border-bottom: 1px solid var(--glass-border);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+    }
+
+    .grid-menu {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+    }
+
+    .menu-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        padding: 30px;
+        display: flex;
+        align-items: center;
+        transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        box-shadow: var(--card-shadow);
+        text-decoration: none !important;
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.6s ease backwards;
+    }
+
+    .menu-card:hover {
+        transform: translateY(-12px) scale(1.02);
+        background: #ffffff;
+        box-shadow: 0 25px 50px -12px rgba(13, 110, 253, 0.15);
+    }
+
+    .navbar-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .card-icon {
+        width: 64px; height: 64px;
+        border-radius: 18px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.8rem; margin-right: 20px;
+        background: white;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+        transition: all 0.5s ease;
+    }
+
+    .menu-card:hover .card-icon {
+        transform: rotate(12deg);
+        color: white !important;
+        background: var(--accent-color);
+    }
+
+    .card-info h3 { 
+        margin: 0; 
+        font-size: 1.2rem; 
+        font-weight: 800; 
+        color: #1e293b;
+    }
+    
+    .card-info span { 
+        font-size: 0.9rem; 
+        color: #64748b; 
+    }
+
+    .card-full {
+        grid-column: 1 / -1;
+        justify-content: center; 
+        background: linear-gradient(90deg, rgba(16, 185, 129, 0.05), rgba(255, 255, 255, 0.7));
+        border: 2px dashed rgba(16, 185, 129, 0.3);
+    }
+
+    .card-full .card-info {
+        text-align: center;
+    }
+
+    .card-full .card-icon {
+        margin-right: 20px; 
+    }
+
+    .dashboard-header {
+        position: relative;
+        padding-left: 25px;
+        border-left: 6px solid var(--primary);
+    }
+
+    /* Couleurs Accent */
+    .color-5 { --accent-color: #ef4444; }
+    .color-2 { --accent-color: #f59e0b; }
+    .color-9 { --accent-color: #eab308; }
+    .color-4 { --accent-color: #8b5cf6; }
+    .color-1 { --accent-color: #3b82f6; }
+    .color-6 { --accent-color: #ec4899; }
+    .color-7 { --accent-color: #10b981; }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Délais d'apparition */
+    .menu-card:nth-child(1) { animation-delay: 0.1s; }
+    .menu-card:nth-child(2) { animation-delay: 0.2s; }
+    .menu-card:nth-child(3) { animation-delay: 0.3s; }
+    .menu-card:nth-child(4) { animation-delay: 0.4s; }
+    .menu-card:nth-child(5) { animation-delay: 0.5s; }
+    .menu-card:nth-child(6) { animation-delay: 0.6s; }
+    .menu-card:nth-child(7) { animation-delay: 0.7s; }
+</style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg bg-white shadow-sm">
-    <div class="container-fluid">
-        <a class="navbar-brand d-flex align-items-center" href="">
-            <img src="{{ asset('image/AppMaint.jpg') }}" alt="Logo" width="40" height="40" class="me-2">
-            <span class="fw-bold text-dark text-uppercase">
-                Appli <span class="text-primary">Maintenance</span>
-            </span>
-        </a>
+<nav class="navbar navbar-expand-lg sticky-top py-3">
+    <div class="container">
+                <a class="navbar-brand" href="{{ url('/') }}">
+                    <div class="logo-container bg-white shadow-sm p-1 rounded-circle" style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;">
+                        <img src="{{ asset('image/AppMaint.png') }}" alt="Logo" width="28" height="28">
+                    </div>
+                    <span class="fw-bold text-dark text-uppercase d-none d-sm-inline" style="font-size: 0.9rem; letter-spacing: 0.5px;">
+                        Appli <span class="text-primary">Maintenance</span>
+                    </span>
+                </a>
 
-        <div class="ms-auto d-flex align-items-center">
-                    <ul class="navbar-nav ms-auto">
+        <div class="ms-auto">
+            <ul class="navbar-nav align-items-center">
+                @guest
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold text-primary" href="{{ route('login') }}">Connexion</a>
+                    </li>
+                @else
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 bg-white px-3 py-2 rounded-pill shadow-sm" href="#" role="button" data-bs-toggle="dropdown">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                {{ substr(Auth::user()->name, 0, 1) }}
+                            </div>
+                            <span class="text-dark fw-bold">{{ Auth::user()->name }}</span>
+                        </a>
 
-                        <!-- Authentication Links -->
-                        @guest
-                            @if (Route::has('login'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Connexion') }}</a>
-                                </li>
+                        <div class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-2 mt-2 rounded-4">
+                            <a class="dropdown-item rounded-3" href="{{ route('profile.edit') }}"><i class="bi bi-person me-2"></i> Mon Profil</a>
+                            @if(auth()->user()->role === 'admin')
+                                <a class="dropdown-item rounded-3" href="{{ route('adminspace') }}"><i class="bi bi-shield-lock me-2"></i> Administration</a>
                             @endif
-
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Enregistrer') }}</a>
-                                </li>
-                            @endif
-                        @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }}
-                                </a>
-
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('profile.edit') }}">Mon Profil</a>
-                                    @if(auth()->user() && auth()->user()->role === 'admin')
-                                        <a class="dropdown-item" href="{{ route('adminspace') }}">Utilisateur</a>
-                                    @endif
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                        document.getElementById('logout-form').submit();">
-                                        {{ __('Deconnexion') }}
-                                    </a>
-
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </li>
-                        @endguest
-                    </ul>
+                            <hr class="dropdown-divider">
+                            <a class="dropdown-item rounded-3 text-danger" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <i class="bi bi-box-arrow-right me-2"></i> Déconnexion
+                            </a>
+                        </div>
+                    </li>
+                @endguest
+            </ul>
         </div>
     </div>
 </nav>
-<div class="container dashboard-container">
-    
 
-    {{-- Entete Principal --}}
+<div class="container mt-5">
     <header class="dashboard-header mb-5">
-        <h1 class="fw-bold">Atelier Informatique</h1>
-        <p class="text-muted">Bienvenue dans votre espace de gestion. Choisissez une option ci-dessous :</p>
+        <h1 class="display-6 fw-800">Atelier Informatique</h1>
+        <p class="text-muted fs-5">Pilotez vos opérations de maintenance en temps réel.</p>
     </header>
 
-    {{-- Menu --}}
     <main> 
         <div class="grid-menu">
-
-            {{-- Intervention --}}
             <a href="{{ route('interventions.index') }}" class="menu-card color-5">
                 <div class="card-icon"><i class="bi bi-journals"></i></div>
                 <div class="card-info">
@@ -85,7 +224,6 @@
                 </div>
             </a>
             
-            {{-- Technicien --}}
             <a href="{{ route('techniciens.index') }}" class="menu-card color-2">
                 <div class="card-icon"><i class="bi bi-person-fill-gear"></i></div>
                 <div class="card-info">
@@ -94,40 +232,35 @@
                 </div>
             </a>
             
-            {{-- Demandeur --}}
             <a href="{{ route('demandeurs.index') }}" class="menu-card color-9">
-                <div class="card-icon"><i class="bi-people"></i></div>
+                <div class="card-icon"><i class="bi bi-people"></i></div>
                 <div class="card-info">
                     <h3>Demandeurs</h3>
                     <span>Clients & Services</span>
                 </div>
             </a>
 
-            {{-- Appareils --}}
             <a href="{{ route('appareils.index') }}" class="menu-card color-4">
-                <div class="card-icon"><i class="bi-laptop"></i></div>
+                <div class="card-icon"><i class="bi bi-laptop"></i></div>
                 <div class="card-info">
                     <h3>Appareils</h3>
                     <span>Gestion du parc</span>
                 </div>
             </a>
 
-            {{-- Materiel --}}
             <a href="{{ route('materiels.index') }}" class="menu-card color-1">
                 <div class="card-icon"><i class="bi bi-tools"></i></div>
                 <div class="card-info">
                     <h3>Matériels</h3>
-                    <span>Inventaire des équipements</span>
+                    <span>Inventaire équipements</span>
                 </div>
             </a>
-            
 
-            {{-- Piece de rechange --}}
             <a href="{{ route('pieces.index') }}" class="menu-card color-6">
-                <div class="card-icon"><i class="bi-box-seam"></i></div>
+                <div class="card-icon"><i class="bi bi-box-seam"></i></div>
                 <div class="card-info">
                     <h3>Pièces Rechanges</h3>
-                    <span>Inventaire des pièces</span>
+                    <span>Suivi du stock</span>
                 </div>
             </a>
 
@@ -135,131 +268,14 @@
                 <div class="card-icon"><i class="bi bi-bar-chart-steps"></i></div>
                 <div class="card-info">
                     <h3>Dashboard</h3>
-                    <span>Statistiques de l'atelier</span>
+                    <span>Accéder aux statistiques avancées</span>
                 </div>
             </a>
         </div>
     </main>
 </div>
 
-<style>
-        /* 1. CONFIGURATION GÉNÉRALE */
-        body {
-            margin: 0;
-            min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
-            background-color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
 
-        /* 2. L'ANIMATION DE SWIPE (Fond de page + Navbar) */
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 200%; /* Largeur double pour le mouvement */
-            height: 100%;
-            z-index: -1;
-            /* Bleu prononcé pour être bien visible */
-            background: linear-gradient(
-                to right, 
-                rgba(255, 255, 255, 0) 0%, 
-                rgba(13, 110, 253, 0.18) 25%, 
-                rgba(255, 255, 255, 0) 50%,
-                rgba(13, 110, 253, 0.18) 75%,
-                rgba(255, 255, 255, 0) 100%
-            );
-            animation: smoothSwipe 12s linear infinite;
-            will-change: transform;
-        }
-
-        @keyframes smoothSwipe {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        /* 3. NAVBAR (Transparente pour laisser passer le swipe) */
-        .navbar {
-            background: transparent !important; /* Crucial pour le swipe */
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
-            border-bottom: 1px solid rgba(13, 110, 253, 0.1);
-        }
-
-        .nav-link.active-menu {
-            border-bottom: 2px solid #0d6efd; 
-            color: #0d6efd !important;   
-            font-weight: bold;
-        }
-
-    .dashboard-container { 
-        padding: 20px 0; 
-        max-width: 1100px;
-        margin: 0 auto;    
-    }
-    
-    .grid-menu {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr); 
-        gap: 25px;
-        width: 100%;
-    }
-
-        /* 4. DASHBOARD & GRID */
-        .dashboard-container { 
-            padding: 40px 15px; 
-            max-width: 1100px;
-            margin: 0 auto;    
-        }
-
-        .dashboard-header { 
-            border-left: 5px solid #0d6efd; 
-            padding-left: 20px; 
-            margin-bottom: 40px;
-        }
-        
-
-        @media (max-width: 992px) { .grid-menu { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 600px) { .grid-menu { grid-template-columns: 1fr; } }
-
-        /* 5. CARTES DU MENU */
-        .menu-card {
-            display: flex;
-            align-items: center;
-            padding: 25px;
-            background: rgba(255, 255, 255, 0.8); /* Semi-transparent pour l'élégance */
-            backdrop-filter: blur(5px); /* Flou derrière les cartes */
-            border-radius: 15px;
-            text-decoration: none;
-            color: #333;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(237, 242, 247, 0.8);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-        }
-
-        .menu-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            background: #fff;
-        }
-
-
-        .card-full {
-            grid-column: 1 / -1;
-            border: 2px solid #19cf0c;
-            justify-content: center;
-        }
-
-        .card-icon { font-size: 2.2rem; margin-right: 20px; min-width: 50px; text-align: center; }
-        .card-info h3 { margin: 0; font-size: 1.1rem; font-weight: 700; }
-        .card-info span { font-size: 0.8rem; color: #6c757d; }
-
-        /* Couleurs des icônes */
-        .color-1 .card-icon { color: #3498db; } .color-2 .card-icon { color: #e67e22; } 
-        .color-4 .card-icon { color: #9b59b6; } 
-        .color-5 .card-icon { color: #e74c3c; } .color-6 .card-icon { color: #ea21d6; }
-        .color-7 .card-icon { color: #19cf0c; } .color-9 .card-icon { color: #f0de1c; }
-</style>
 </body>
 </html>

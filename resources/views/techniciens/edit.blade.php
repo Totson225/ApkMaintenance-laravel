@@ -1,133 +1,164 @@
 @extends('layouts.app')
 
+@section('title', 'AppliMaintenance | Technicien')
+
 @section('content')
-
-            <div class="container py-4">
-                <div class="row justify-content-center">
-                    <div class="col-md-8">
-                        
-                        {{-- En-tête avec bouton retour --}}
-                        <div class="d-flex align-items-center mb-4">
-                            <h4 class="mb-0 fw-bold text-primary">Modifier le technicien</h4>
-                        </div>
-
-                        <div class="card shadow-sm border-0">
-                            <div class="card-body p-4">
-                                <form action="{{ route('techniciens.update', $technicien->id_technicien) }}" method="post">
-                                    @csrf
-                                    @method('PUT')
-                                    
-                                    <div class="row">
-                                        {{-- Nom --}}
-                                        <div class="col-md-6 mb-3">
-                                            <label for="nom_techniciens" class="form-label fw-bold small text-muted">NOM</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-person-fill"></i></span>
-                                                <input type="text" name="nom_techniciens" id="nom_techniciens" placeholder="Siluer" 
-                                                    value="{{ old('nom_techniciens', $technicien->nom_techniciens) }}" 
-                                                    class="form-control bg-light border-start-0 @error('nom_techniciens') is-invalid @enderror">
-                                            </div>
-                                            @error('nom_techniciens')
-                                                <div class="text-danger small mt-1">{{ '!!!Veillez entrer un nom' }}</div>
-                                            @enderror
-                                        </div>
-
-                                        {{-- Prénom --}}
-                                        <div class="col-md-6 mb-3">
-                                            <label for="prenom_techniciens" class="form-label fw-bold small text-muted">PRÉNOM(S)</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
-                                                <input type="text" name="prenom_techniciens" id="prenom_techniciens" placeholder="Periguegnon Sara" 
-                                                    value="{{ old('prenom_techniciens', $technicien->prenom_techniciens) }}" 
-                                                    class="form-control bg-light border-start-0 @error('prenom_techniciens') is-invalid @enderror">
-                                            </div>
-                                            @error('prenom_techniciens')
-                                                <div class="text-danger small mt-1">{{ '!!!Veillez entrer un prenom' }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        {{-- Téléphone --}}
-                                        <div class="col-md-6 mb-3">
-                                            <label for="telephone_technicien" class="form-label fw-bold small text-muted">TÉLÉPHONE</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-telephone"></i></span>
-                                                <input type="text" name="telephone_technicien" id="telephone_technicien" 
-                                                    value="{{ old('telephone_technicien', $technicien->telephone_technicien) }}" 
-                                                    class="form-control bg-light border-start-0 @error('telephone_technicien') is-invalid @enderror">
-                                            </div>
-                                            @error('telephone_technicien')
-                                                <div class="text-danger small mt-1">{{ '!!!Veillez entrer un numero de telephone' }}</div>
-                                            @enderror
-                                        </div>
-
-                                        {{-- Sexe --}}
-                                        <div class="col-md-6 mb-3">
-                                            <label for="sexe_techniciens" class="form-label fw-bold small text-muted">SEXE</label>
-                                            <div class="input-group">
-                                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-gender-ambiguous"></i></span>
-                                                    <select class="form-select bg-light border-start-0 @error('sexe_techniciens') is-invalid @enderror" name="sexe_techniciens" id="sexe_demandeurs" required>
-                                                        <option selected disabled value="">Choisir...</option>
-                                                        <option value="Masculin" {{ old('sexe_techniciens', $technicien->sexe_techniciens) == 'Masculin' ? 'selected' : '' }}>M (Masculin)</option>
-                                                        <option value="Feminin" {{ old('sexe_techniciens', $technicien->sexe_techniciens) == 'Feminin' ? 'selected' : '' }}>F (Féminin)</option>  
-                                                    </select>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- Service --}}
-                                    <div class="mb-3">
-                                        <label for="specialite_technicien" class="form-label fw-bold small text-muted">SPECIALITE</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-tools"></i></span>
-                                            <input type="text" name="specialite_technicien" id="specialite_technicien" placeholder="Réseau, Maintenance, etc." 
-                                                value="{{ old('specialite_technicien', $technicien->specialite_technicien) }}" 
-                                                class="form-control bg-light border-start-0 @error('specialite_technicien') is-invalid @enderror">
-                                        </div>
-                                        @error('specialite_technicien')
-                                            <div class="text-danger small mt-1">{{ '!!!Veillez entrer un service' }}</div>
-                                        @enderror
-                                    </div>
-
-                                    {{-- Mail --}}
-                                    <div class="mb-4">
-                                        <label for="email_technicien" class="form-label fw-bold small text-muted">EMAIL</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope"></i></span>
-                                            <input type="email" name="email_technicien" id="email_technicien" placeholder="monemail@gmail.com" 
-                                                value="{{ old('email_technicien', $technicien->email_technicien) }}" 
-                                                class="form-control bg-light border-start-0 @error('email_technicien') is-invalid @enderror">
-                                        </div>
-                                        @error('email_technicien')
-                                            <div class="text-danger small mt-1">{{ '!!!Veillez entrer une adresse email' }}</div>
-                                        @enderror
-                                    </div>
-
-
-                                        {{--Statut--}}
-                                        <div class="col-md-6 mb-3">
-                                            <label for="statut_tech" class="form-label fw-bold small text-muted">Statut</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-info-circle"></i></span>
-                                                    <select class="form-select bg-light border-start-0 @error('statut_tech') is-invalid @enderror" name="statut_tech" id="statut_tech" required>
-                                                        <option selected disabled value="">Choisir la disponibilité...</option>
-                                                        <option value="Occuper" {{ old('statut_tech', $technicien->statut_tech) == 'Occuper' ? 'selected' : '' }}>O (Occuper)</option>
-                                                        <option value="Disponible" {{ old('statut_tech', $technicien->statut_tech) == 'Disponible' ? 'selected' : '' }}>D (Disponible)</option>  
-                                                     </select>
-                                            </div>
-                                        </div>
-
-                                    <div class="d-grid shadow-sm">
-                                        <button class="btn btn-primary btn-lg fw-bold" id="enregistrer" type="submit">
-                                            <i class="bi bi-person-plus-fill me-2"></i>Modifier le technicien
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            
+            {{-- En-tête avec bouton retour --}}
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div class="d-flex align-items-center">
+                    <div>
+                        <h4 class="mb-0 fw-bold text-dark">Modifier le Technicien</h4>
+                        <p class="text-muted small mb-0">Mise à jour des informations de {{ $technicien->nom_techniciens }}</p>
                     </div>
                 </div>
+                <a href="{{ route('techniciens.index') }}" class="btn btn-light rounded-pill shadow-sm px-3">
+                    <i class="bi bi-arrow-left me-2"></i>Retour
+                </a>
             </div>
 
+            {{-- Formulaire Card --}}
+            <div class="card body-glass border-0 shadow-lg">
+                <div class="card-body p-5">
+                    <form action="{{ route('techniciens.update', $technicien->id_technicien) }}" method="post" id="formEditTechnicien">
+                        @csrf
+                        @method('PUT')
+                        
+                        <div class="row g-4">
+                            {{-- Nom --}}
+                            <div class="col-md-6">
+                                <label for="nom_techniciens" class="form-label fw-bold small text-uppercase tracking-wider text-muted">Nom de famille</label>
+                                <div class="input-group custom-input-group">
+                                    <span class="input-group-text bg-white border-end-0 text-primary"><i class="bi bi-person-badge"></i></span>
+                                    <input type="text" name="nom_techniciens" id="nom_techniciens" 
+                                        value="{{ old('nom_techniciens', $technicien->nom_techniciens) }}" 
+                                        class="form-control border-start-0 ps-0 @error('nom_techniciens') is-invalid @enderror" required>
+                                </div>
+                                @error('nom_techniciens')
+                                    <div class="text-danger x-small mt-1 animate__animated animate__fadeIn"><i class="bi bi-exclamation-circle me-1"></i>Nom requis</div>
+                                @enderror
+                            </div>
+
+                            {{-- Prénom --}}
+                            <div class="col-md-6">
+                                <label for="prenom_techniciens" class="form-label fw-bold small text-uppercase tracking-wider text-muted">Prénom(s)</label>
+                                <div class="input-group custom-input-group">
+                                    <span class="input-group-text bg-white border-end-0 text-primary"><i class="bi bi-person"></i></span>
+                                    <input type="text" name="prenom_techniciens" id="prenom_techniciens" 
+                                        value="{{ old('prenom_techniciens', $technicien->prenom_techniciens) }}" 
+                                        class="form-control border-start-0 ps-0 @error('prenom_techniciens') is-invalid @enderror" required>
+                                </div>
+                                @error('prenom_techniciens')
+                                    <div class="text-danger x-small mt-1 animate__animated animate__fadeIn"><i class="bi bi-exclamation-circle me-1"></i>Prénom requis</div>
+                                @enderror
+                            </div>
+
+                            {{-- Téléphone --}}
+                            <div class="col-md-6">
+                                <label for="telephone_technicien" class="form-label fw-bold small text-uppercase tracking-wider text-muted">Téléphone</label>
+                                <div class="input-group custom-input-group">
+                                    <span class="input-group-text bg-white border-end-0 text-primary"><i class="bi bi-phone"></i></span>
+                                    <input type="tel" name="telephone_technicien" id="telephone_technicien" 
+                                        value="{{ old('telephone_technicien', $technicien->telephone_technicien) }}" 
+                                        class="form-control border-start-0 ps-0 @error('telephone_technicien') is-invalid @enderror" required>
+                                </div>
+                            </div>
+
+                            {{-- Sexe --}}
+                            <div class="col-md-6">
+                                <label for="sexe_techniciens" class="form-label fw-bold small text-uppercase tracking-wider text-muted">Sexe</label>
+                                <div class="input-group custom-input-group">
+                                    <span class="input-group-text bg-white border-end-0 text-primary"><i class="bi bi-gender-ambiguous"></i></span>
+                                    <select class="form-select border-start-0 ps-0 @error('sexe_techniciens') is-invalid @enderror" name="sexe_techniciens" id="sexe_techniciens" required>
+                                        <option value="Masculin" {{ old('sexe_techniciens', $technicien->sexe_techniciens) == 'Masculin' ? 'selected' : '' }}>Masculin</option>
+                                        <option value="Feminin" {{ old('sexe_techniciens', $technicien->sexe_techniciens) == 'Feminin' ? 'selected' : '' }}>Féminin</option>  
+                                    </select>
+                                </div>
+                            </div>
+
+                            {{-- Spécialité --}}
+                            <div class="col-12">
+                                <label for="specialite_technicien" class="form-label fw-bold small text-uppercase tracking-wider text-muted">Domaine d'expertise</label>
+                                <div class="input-group custom-input-group">
+                                    <span class="input-group-text bg-white border-end-0 text-primary"><i class="bi bi-tools"></i></span>
+                                    <input type="text" name="specialite_technicien" id="specialite_technicien" 
+                                        value="{{ old('specialite_technicien', $technicien->specialite_technicien) }}" 
+                                        class="form-control border-start-0 ps-0 @error('specialite_technicien') is-invalid @enderror" required>
+                                </div>
+                            </div>
+
+                            {{-- Mail --}}
+                            <div class="col-md-7">
+                                <label for="email_technicien" class="form-label fw-bold small text-uppercase tracking-wider text-muted">Email Professionnel</label>
+                                <div class="input-group custom-input-group">
+                                    <span class="input-group-text bg-white border-end-0 text-primary"><i class="bi bi-envelope"></i></span>
+                                    <input type="email" name="email_technicien" id="email_technicien" 
+                                        value="{{ old('email_technicien', $technicien->email_technicien) }}" 
+                                        class="form-control border-start-0 ps-0 @error('email_technicien') is-invalid @enderror">
+                                </div>
+                            </div>
+
+                            {{-- Statut --}}
+                            <div class="col-md-5">
+                                <label for="statut_tech" class="form-label fw-bold small text-uppercase tracking-wider text-muted">Statut Actuel</label>
+                                <div class="input-group custom-input-group">
+                                    <span class="input-group-text bg-white border-end-0 text-primary"><i class="bi bi-activity"></i></span>
+                                    <select class="form-select border-start-0 ps-0 @error('statut_tech') is-invalid @enderror" name="statut_tech" id="statut_tech" required>
+                                        <option value="Disponible" {{ old('statut_tech', $technicien->statut_tech) == 'Disponible' ? 'selected' : '' }}>🟢 Disponible</option> 
+                                        <option value="Occuper" {{ old('statut_tech', $technicien->statut_tech) == 'Occuper' ? 'selected' : '' }}>🔴 Occupé</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <button class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm btn-submit" type="submit">
+                                <i class="bi bi-check2-circle me-2"></i>Mettre à jour le Profil
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Styles identiques pour la cohérence --}}
+<style>
+    .body-glass {
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px);
+        border-radius: 25px !important;
+        border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    }
+    .icon-box {
+        width: 45px; height: 45px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .bg-primary-soft { background-color: #f1f4ff; }
+    .custom-input-group .form-control, .custom-input-group .form-select, .custom-input-group .input-group-text {
+        border-color: #e9ecef !important;
+        padding-top: 12px; padding-bottom: 12px;
+        background-color: #ffffff !important;
+    }
+    .custom-input-group:focus-within { transform: translateY(-2px); transition: all 0.3s ease; }
+    .custom-input-group:focus-within .input-group-text { color: #4e73df !important; border-color: #4e73df !important; }
+    .custom-input-group .form-control:focus { box-shadow: none !important; border-color: #4e73df !important; }
+    .tracking-wider { letter-spacing: 0.08em; }
+    .x-small { font-size: 0.75rem; }
+    .btn-submit { background: linear-gradient(45deg, #4e73df, #224abe); border: none; transition: all 0.3s; }
+    .btn-submit:hover { transform: scale(1.01); box-shadow: 0 8px 20px rgba(78, 115, 223, 0.3) !important; }
+</style>
+
+<script>
+    document.getElementById('formEditTechnicien').addEventListener('submit', function() {
+        const btn = this.querySelector('.btn-submit');
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mise à jour en cours...';
+        btn.classList.add('disabled');
+    });
+</script>
 @endsection

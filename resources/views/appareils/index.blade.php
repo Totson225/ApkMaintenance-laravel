@@ -1,212 +1,250 @@
 @extends('layouts.app')
 
+@section('title', 'AppliMaintenance | Appareil')
+
 @section('content')
-
-
-<div class="container py-4">
-    {{-- Message de succès --}}
+<div class="container py-5">
+    {{-- Alertes stylisées --}}
     @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>
-            {{ session('success') }}
+        <div class="alert alert-custom alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+            <div class="d-flex align-items-center">
+                <div class="alert-icon-circle bg-success text-white me-3">
+                    <i class="bi bi-check2-all"></i>
+                </div>
+                <div>
+                    <strong class="d-block">Succès</strong>
+                    <span class="small">{{ session('success') }}</span>
+                </div>
+            </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
-     
-    <div class="card shadow-sm border-0">
 
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-bold text-primary">
-                <i class="bi-laptop me-2"></i>Liste des Appareils
-            </h5>
-            <form class="d-flex" role="search" action="{{ route('appareils.index') }}" method="GET">
-                <input class="form-control me-2" 
-                    name="search" 
-                    type="search" 
-                    placeholder="Nom, Marque, Type..." 
-                    aria-label="Search" 
-                    value="{{ request('search') }}"/>
-                <button class="btn btn-outline-primary" type="submit">Recherche</button>
-            </form>
-            @if(auth()->user() && auth()->user()->role === 'admin')
-                 <a href="{{route('appareils.create')}}" class="btn btn-primary btn-sm">Ajouter Appareil</a>
-            @endif
-        </div>
-        
-    </div>
-    <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
-                        <tr>
-                            <th class="ps-4">Nom & Marque</th>
-                            <th>Type</th>
-                            <th>Etat</th>
-                            <th>Couleur</th>
-                            <th class="text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($appareils as $appareil)
-                            <tr>
-                                <td class="ps-4">
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-sm bg-light text-primary rounded-circle d-flex align-items-center justify-content-center me-3 fw-bold" style="width: 40px; height: 40px; border: 1px solid #e0e0e0;">
-                                            {{ strtoupper(substr($appareil->nom_appareil, 0, 1))}}
-                                        </div>
-                                        <div>
-                                            <div class="fw-bold text-dark">{{ $appareil->nom_appareil }}</div>
-                                            <small class="text-muted">{{ $appareil->marque_appareil }}</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge bg-info-subtle text-info px-2 py-1">
-                                        {{ $appareil->type_appareil ?? 'N/A' }}
-                                    </span>
-                                </td>
-                                <td>
-                                    @if(strtolower($appareil->etat_appareil) == 'reparer')
-                                        {{-- Etat reparer --}}
-                                        <span class="badge rounded-pill bg-success-subtle text-success border border-success">
-                                            <i class="bi bi-dash-circle-fill me-1"></i> Reparer
-                                        </span>
-                                    @else
-                                        {{-- Etat Endommager --}}
-                                        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger ">
-                                            <i class="bi bi-exclamation-triangle-fill me-1"></i> Endommager
-                                        </span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <span class="badge bg-secondary-subtle text-secondary">
-                                        {{ $appareil->couleur_appareil }}
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    <div class="btn-group shadow-sm">
-                                        <a href="{{route('appareils.show', $appareil->id_appareil)}}" class="btn btn-outline-light btn-sm text-black border" title="Voir">
-                                           <i class="bi bi-eye"></i>
-                                        </a>
-                                        @if(auth()->user() && auth()->user()->role === 'admin')
-                                            <a href="{{route('appareils.edit', $appareil->id_appareil)}}" class="btn btn-outline-light btn-sm text-black border" title="Modifier">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                                    <button type="button" class="btn btn-outline-light btn-sm text-danger border" 
-                                                            data-bs-toggle="modal" 
-                                                            data-bs-target="#Supprimer{{ $appareil->id_appareil }}" 
-                                                            title="Supprimer">
-                                                        <i class="bi bi-trash3"></i>
-                                                    </button>
+    {{-- En-tête --}}
+    <div class="card header-glass border-0">
+        <div class="card-header bg-transparent py-4 d-flex justify-content-between align-items-center border-0">
+            <div>
+                <h4 class="mb-0 fw-bold text-dark tracking-tight">
+                    <span class="icon-box bg-primary-soft text-primary me-2">
+                        <i class="bi bi-laptop"></i>
+                    </span>
+                    Liste des Appareils
+                </h4>
+                <p class="text-muted small mb-0 ms-5 mt-1">Inventaire technique du parc informatique</p>
+            </div>
 
-                                                    <div class="modal fade" id="Supprimer{{ $appareil->id_appareil }}" tabindex="-1" aria-hidden="true">
-                                                        <div class="modal-dialog modal-dialog-centered">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header border-0">
-                                                                    <h5 class="modal-title fw-bold">Confirmer la suppression</h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                </div>
-                                                                <div class="modal-body text-center py-4">
-                                                                    <i class="bi bi-exclamation-triangle text-danger display-4 mb-3"></i>
-                                                                    <p class="mb-0">Voulez-vous vraiment supprimer l'appareil :</p>
-                                                                    <h5 class="fw-bold">{{ $appareil->nom_appareil }} ({{ $appareil->marque_appareil }}) ?</h5>
-                                                                    <small class="text-muted">Cette action est irréversible.</small>
-                                                                </div>
-                                                                <div class="modal-footer border-0 justify-content-center">
-                                                                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Annuler</button>
-                                                                    
-                                                                    <form action="{{ route('appareils.destroy', $appareil->id_appareil) }}" method="POST">
-                                                                        @csrf
-                                                                        @method('DELETE')
-                                                                        <button type="submit" class="btn btn-danger px-4">Supprimer définitivement</button>
-                                                                    </form>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                            </form>
-                                        @endif
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="text-center py-5">
-                                    <div class="text-muted">
-                                        <i class="bi bi-folder-x display-4"></i>
-                                        <p class="mt-2">Aucun appareil trouvé.</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+            <div class="d-flex align-items-center gap-3">
+                <form class="search-wrapper" role="search" action="{{ route('appareils.index') }}" method="GET">
+                    <i class="bi bi-search search-icon"></i>
+                    <input class="form-control search-input" 
+                        name="search" 
+                        type="search" 
+                        placeholder="Nom, Marque..." 
+                        value="{{ request('search') }}"/>
+                </form>
+                
+                @if(auth()->user() && auth()->user()->role === 'admin')
+                    <a href="{{route('appareils.create')}}" class="btn btn-primary btn-add-custom shadow-sm">
+                        <i class="bi bi-plus-lg me-2"></i>Nouveau 
+                    </a>
+                @endif
             </div>
         </div>
+    </div>
+
+    {{-- Tableau --}}
+    <div class="card-body p-0 body-glass mt-3">
+        <div class="table-responsive">
+            <table class="table table-custom align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Appareil & Marque</th>
+                        <th>Type</th>
+                        <th>État</th>
+                        <th>Couleur</th>
+                        <th class="text-center">Gestion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($appareils as $appareil)
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-dynamic me-3" style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);">
+                                        <span class="text-white fw-bold">{{ strtoupper(substr($appareil->nom_appareil, 0, 1))}}</span>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark mb-0">{{ $appareil->nom_appareil }}</div>
+                                        <div class="text-primary-soft-dark small fw-medium">{{ $appareil->marque_appareil }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {{-- Écriture augmentée ici --}}
+                                <span class="badge bg-light text-dark border-0 px-3 py-2 fw-bold fs-6">
+                                    {{ $appareil->type_appareil ?? 'N/A' }}
+                                </span>
+                            </td>
+                            <td>
+                                @if(strtolower($appareil->etat_appareil) == 'reparer')
+                                    <div class="status-tag status-ok">
+                                        <span class="dot"></span> Réparé
+                                    </div>
+                                @else
+                                    <div class="status-tag status-error">
+                                        <span class="dot"></span> Endommagé
+                                    </div>
+                                @endif
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-palette me-2 text-muted"></i>
+                                    <span class="small fw-medium">{{ $appareil->couleur_appareil }}</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="action-stack">
+                                    {{-- Paire d'yeux --}}
+                                    <a href="{{route('appareils.show', $appareil->id_appareil)}}" class="action-btn view" title="Voir">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+
+                                    @if(auth()->user() && auth()->user()->role === 'admin')
+                                        {{-- Crayon --}}
+                                        <a href="{{route('appareils.edit', $appareil->id_appareil)}}" class="action-btn edit" title="Modifier">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" class="action-btn delete" data-bs-toggle="modal" data-bs-target="#Supprimer{{ $appareil->id_appareil }}">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+
+                        {{-- Modal de suppression --}}
+                        @if(auth()->user() && auth()->user()->role === 'admin')
+                        <div class="modal fade" id="Supprimer{{ $appareil->id_appareil }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+                                    <div class="modal-body text-center p-5">
+                                        <div class="delete-warning-icon mb-4">
+                                            <i class="bi bi-exclamation-octagon text-danger display-4"></i>
+                                        </div>
+                                        <h4 class="fw-bold mb-3">Supprimer ?</h4>
+                                        <p class="text-muted small">Voulez-vous supprimer <strong>{{ $appareil->nom_appareil }}</strong> ?</p>
+                                        <div class="d-flex gap-2 justify-content-center mt-4">
+                                            <button type="button" class="btn btn-light px-4 rounded-pill fw-bold shadow-sm" data-bs-dismiss="modal">Non</button>
+                                            <form action="{{ route('appareils.destroy', $appareil->id_appareil) }}" method="POST">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="btn btn-danger px-4 rounded-pill fw-bold shadow-sm">Oui, supprimer</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
+                    @empty
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <div class="empty-state">
+                                    <i class="bi bi-folder-x display-1 text-light"></i>
+                                    <p class="mt-3 text-muted fw-medium">Aucun appareil trouvé.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Pagination --}}
         @if($appareils->hasPages())
-            <div class="card-footer bg-white border-top-0 py-4">
-                <div class="d-flex d-flex justify-content-center align-items-center flex-wrap gap-3">
-                    <div class="custom-pagination">
-                        {{ $appareils->appends(['search' => request('search')])->links() }}
-                    </div>
+            <div class="pagination-footer py-4 d-flex justify-content-center border-top">
+                <div class="custom-pagination">
+                    {{ $appareils->appends(['search' => request('search')])->links() }}
                 </div>
             </div>
         @endif
-
+    </div>
 </div>
+
 <style>
-
-    /* style pagi */
-    .custom-pagination .pagination {
-        margin-bottom: 0;
-        gap: 5px; 
+    :root {
+        --primary-color: #4e73df;
+        --primary-soft: #f1f4ff;
+        --bg-main: #f8f9fc;
+        --text-muted: #858796;
     }
 
+    body { background-color: var(--bg-main); font-family: 'Inter', sans-serif; }
 
-    .custom-pagination .page-link {
-        border: none;
-        border-radius: 8px !important;
-        padding: 8px 16px;
-        color: #4e73df;
-        background-color: #f8f9fc;
-        transition: all 0.3s ease;
-        font-weight: 500;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    /* Cartes Glassmorphism */
+    .header-glass { background: white !important; border-radius: 20px !important; box-shadow: 0 4px 20px rgba(0,0,0,0.05) !important; }
+    .body-glass { 
+        background: white !important; border-radius: 20px !important; 
+        box-shadow: 0 15px 40px rgba(0,0,0,0.08) !important; 
+        overflow: hidden; border: 1px solid rgba(0,0,0,0.02); 
     }
 
+    .icon-box { padding: 10px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; }
+    .bg-primary-soft { background-color: var(--primary-soft); }
 
-    .custom-pagination .page-link:hover {
-        background-color: #4e73df;
-        color: white !important;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(78, 115, 223, 0.2);
+    /* Barre de Recherche */
+    .search-wrapper { position: relative; width: 280px; }
+    .search-input {
+        border-radius: 50px !important; padding-left: 40px !important;
+        background: var(--bg-main) !important; border: 1px solid transparent !important;
+        font-size: 0.9rem;
+    }
+    .search-input:focus { background: white !important; border-color: var(--primary-color) !important; box-shadow: 0 0 0 4px rgba(78, 115, 223, 0.1) !important; }
+    .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+
+    .btn-add-custom { border-radius: 50px !important; padding: 8px 20px !important; font-weight: 600; transition: transform 0.2s; }
+
+    /* Tableau */
+    .table-custom thead th {
+        background: #fdfdff; color: var(--text-muted); font-size: 0.75rem;
+        font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+        padding: 1.5rem 1rem; border-bottom: 1px solid #f1f1f1 !important;
     }
 
-
-    .custom-pagination .page-item.active .page-link {
-        background-color: #4e73df;
-        color: white;
-        box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+    .avatar-dynamic {
+        width: 45px; height: 45px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
+    /* Statuts */
+    .status-tag { display: inline-flex; align-items: center; padding: 6px 14px; border-radius: 50px; font-size: 0.85rem; font-weight: 600; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
+    .status-ok { background: #eafaf1; color: #27ae60; }
+    .status-ok .dot { background: #27ae60; box-shadow: 0 0 8px #27ae60; }
+    .status-error { background: #fff5f5; color: #e74c3c; }
+    .status-error .dot { background: #e74c3c; box-shadow: 0 0 8px #e74c3c; }
 
-    .custom-pagination .page-item.disabled .page-link {
-        background-color: #f1f3f9;
-        color: #b7c1d1;
+    /* Actions */
+    .action-stack { display: flex; gap: 8px; justify-content: center; }
+    .action-btn {
+        width: 38px; height: 38px;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 10px; background: var(--bg-main);
+        text-decoration: none; border: none; transition: all 0.2s;
+        font-size: 1.1rem;
     }
+    .action-btn.view { color: var(--primary-color); }
+    .action-btn.edit { color: #f39c12; }
+    .action-btn.delete { color: #e74c3c; }
+    .action-btn:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); background: white; }
 
-
-    .custom-pagination .page-link aria-hidden {
-        font-weight: bold;
-    }
-
-    /* Phrase non */
-    .pagination nav .flex.items-center.justify-between div:first-child {
-    display: none !important;
-    }
-
-    .custom-pagination nav div p {
-        display: none !important;
-    }
+    /* Pagination */
+    .custom-pagination .pagination { gap: 5px; }
+    .custom-pagination .page-link { border-radius: 12px !important; border: none !important; background: #f8f9fc; color: var(--primary-color); font-weight: 600; }
+    .custom-pagination .page-item.active .page-link { background: var(--primary-color) !important; color: white; }
+    
+    nav p.text-sm { display: none !important; }
+    .table-responsive::-webkit-scrollbar { display: none; }
 </style>
 @endsection

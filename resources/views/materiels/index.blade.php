@@ -1,220 +1,281 @@
 @extends('layouts.app')
 
+@section('title', 'AppliMaintenance | Materiel')
+
 @section('content')
-
-
-<div class="container py-4">
-    {{-- Message de succès --}}
+<div class="container py-5">
+    {{-- Alertes stylisées --}}
     @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>
-            {{ session('success') }}
+        <div class="alert alert-custom alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+            <div class="d-flex align-items-center">
+                <div class="alert-icon-circle bg-success text-white me-3">
+                    <i class="bi bi-check2-all"></i>
+                </div>
+                <div>
+                    <strong class="d-block">Inventaire mis à jour</strong>
+                    <span class="small">{{ session('success') }}</span>
+                </div>
+            </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
-     
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-bold text-primary">
-                <i class="bi bi-tools me-2"></i>Liste des Matériels
-            </h5>
-            <form class="d-flex" role="search" action="{{ route('materiels.index') }}" method="GET">
-                <input class="form-control me-2" 
-                    name="search" 
-                    type="search" 
-                    placeholder="Type, Marque, Model..." 
-                    aria-label="Search" 
-                    value="{{ request('search') }}"/>
-                <button class="btn btn-outline-primary" type="submit">Recherche</button>
-            </form>
-            @if(auth()->user() && auth()->user()->role === 'admin')
-                 <a href="{{route('materiels.create')}}" class="btn btn-primary btn-sm">Nouveau Matériel</a>
-            @endif
-        </div>
-    </div>
-    <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
-                        <tr>
-                            <th class="ps-4">Type & Marque</th>
-                            <th>Modele</th>
-                            <th>Numero de serie</th>
-                            <th>Date Acquisition</th>
-                            <th>Etat</th>
-                            <th class="text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($materiels as $materiel)
-                            <tr>
-                                <td class="ps-4">
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-sm bg-light text-primary rounded-circle d-flex align-items-center justify-content-center me-3 fw-bold" style="width: 40px; height: 40px; border: 1px solid #e0e0e0;">
-                                            {{ strtoupper(substr($materiel->type_materiel, 0, 1)) }}
-                                        </div>
-                                        <div>
-                                            <div class="fw-bold text-dark">{{ $materiel->type_materiel }}</div>
-                                            <small class="text-muted">{{ $materiel->marque }}</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge bg-info-subtle text-info px-2 py-1">
-                                        {{ $materiel->modele ?? 'N/A' }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-secondary-subtle text-secondary">
-                                        {{ $materiel->numero_serie ?? 'N/A' }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="ps-4">
-                                        {{ $materiel->date_acquisition }}
-                                    </span>
-                                </td>
-                                <td>
-                                    @if(strtolower($materiel->etat) == 'operationnel')
-                                        {{-- Etat Operationnel --}}
-                                        <span class="badge rounded-pill bg-success-subtle text-success border border-success">
-                                            <i class="bi bi-dash-circle-fill me-1"></i> Operationnel
-                                        </span>
-                                    @else
-                                        {{-- Etat Indisponible --}}
-                                        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger ">
-                                            <i class="bi bi-check-circle-fill me-1"></i> Indisponible
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="text-center">
-                                    <div class="btn-group shadow-sm">
-                                        <a href="{{route('materiels.show', $materiel->Id_materiel)}}" class="btn btn-outline-light btn-sm text-black border" title="Voir">
-                                           <i class="bi bi-eye"></i>
-                                        </a>
-                                        @if(auth()->user() && auth()->user()->role === 'admin')
-                                            <a href="{{route('materiels.edit', $materiel->Id_materiel)}}" class="btn btn-outline-light btn-sm text-black border" title="Modifier">
-                                                <ic class="bi bi-pencil"></ic>
-                                            </a>
-                                            <form action="{{ route('materiels.destroy', $materiel->Id_materiel)}}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="button" class="btn btn-outline-light btn-sm text-danger border" 
-                                                            data-bs-toggle="modal" 
-                                                            data-bs-target="#Supprimer{{ $materiel->Id_materiel }}" 
-                                                            title="Supprimer">
-                                                        <i class="bi bi-trash3"></i>
-                                                    </button>
 
-                                                    <div class="modal fade" id="Supprimer{{ $materiel->Id_materiel }}" tabindex="-1" aria-hidden="true">
-                                                        <div class="modal-dialog modal-dialog-centered">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header border-0">
-                                                                    <h5 class="modal-title fw-bold">Confirmer la suppression</h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                </div>
-                                                                <div class="modal-body text-center py-4">
-                                                                    <i class="bi bi-exclamation-triangle text-danger display-4 mb-3"></i>
-                                                                    <p class="mb-0">Voulez-vous vraiment supprimer le matériel :</p>
-                                                                    <h5 class="fw-bold">{{ $materiel->type_materiel }} ({{ $materiel->marque }}) ?</h5>
-                                                                    <small class="text-muted">Cette action est irréversible.</small>
-                                                                </div>
-                                                                <div class="modal-footer border-0 justify-content-center">
-                                                                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Annuler</button>
-                                                                    
-                                                                    {{-- Formulaire réel placé ICI --}}
-                                                                    <form action="{{ route('materiels.destroy', $materiel->Id_materiel) }}" method="POST">
-                                                                        @csrf
-                                                                        @method('DELETE')
-                                                                        <button type="submit" class="btn btn-danger px-4">Supprimer définitivement</button>
-                                                                    </form>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                            </form>
-                                        @endif
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center py-5">
-                                    <div class="text-muted">
-                                        <i class="bi bi-folder-x display-4"></i>
-                                        <p class="mt-2">Aucun materiel trouvé.</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+    {{-- En-tête de la carte (Design Harmonisé) --}}
+    <div class="card header-glass border-0">
+        <div class="card-header bg-transparent py-4 d-flex justify-content-between align-items-center border-0">
+            <div>
+                <h4 class="mb-0 fw-bold text-dark tracking-tight">
+                    <span class="icon-box bg-primary-soft text-primary me-2">
+                        <i class="bi bi-tools"></i>
+                    </span>
+                    Parc Marériel
+                </h4>
+                <p class="text-muted small mb-0 ms-5 mt-1">Suivi et gestion des équipements techniques</p>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                <form class="search-wrapper" role="search" action="{{ route('materiels.index') }}" method="GET">
+                    <i class="bi bi-search search-icon"></i>
+                    <input class="form-control search-input" 
+                        name="search" 
+                        type="search" 
+                        placeholder="Rechercher un matériel..." 
+                        value="{{ request('search') }}"/>
+                </form>
+                
+                @if(auth()->user() && auth()->user()->role === 'admin')
+                    <a href="{{route('materiels.create')}}" class="btn btn-primary btn-add-custom shadow-sm">
+                        <i class="bi bi-plus-lg me-2"></i>Nouveau 
+                    </a>
+                @endif
             </div>
         </div>
+    </div>
+
+    {{-- Corps du tableau --}}
+    <div class="card-body p-0 body-glass mt-3">
+        <div class="table-responsive">
+            <table class="table table-custom align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Équipement</th>
+                        <th>Modèle & S/N</th>
+                        <th>Acquisition</th>
+                        <th>État Actuel</th>
+                        <th class="text-center">Gestion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($materiels as $materiel)
+                        @php
+                            $type = strtolower($materiel->type_materiel);
+                            $icon = 'bi-tools';
+                            $gradient = 'linear-gradient(135deg, #6c757d 0%, #343a40 100%)';
+                        @endphp
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-dynamic me-3" style="background: {{ $gradient }};">
+                                        <i class="bi {{ $icon }} fs-5 text-white"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark mb-0">{{ $materiel->type_materiel }}</div>
+                                        <div class="text-primary-soft-dark small fw-medium">{{ $materiel->marque }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    {{-- Modèle : Augmentation de la taille et suppression du 'px-0' pour plus d'espace --}}
+                                    <span class="badge bg-light text-dark border-0 fw-bold fs-6 mb-1" style="text-align: left; width: fit-content;">
+                                         {{ $materiel->modele ?? 'N/A' }}
+                                    </span>
+                                    {{-- S/N : Remplacement de 'small' par 'fs-7' (custom) ou suppression du 'small' --}}
+                                    <div class="sn-container">
+                                        <span class="text-uppercase text-muted fw-medium" style="font-size: 0.85rem;">N*</span>
+                                        <code class="text-dark fw-bold ms-1" style="font-size: 0.9rem; background: transparent; padding: 0;">
+                                            {{ $materiel->numero_serie ?? 'Inconnu' }}
+                                        </code>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="text-muted small">
+                                    <i class="bi bi-calendar3 me-1"></i> {{ $materiel->date_acquisition }}
+                                </div>
+                            </td>
+                            <td>
+                                @if(strtolower($materiel->etat) == 'operationnel')
+                                    <div class="status-tag status-ok">
+                                        <span class="dot"></span> Opérationnel
+                                    </div>
+                                @else
+                                    <div class="status-tag status-error">
+                                        <span class="dot"></span> Indisponible
+                                    </div>
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                <div class="action-stack">
+                                    <a href="{{route('materiels.show', $materiel->Id_materiel)}}" class="action-btn view" title="Détails">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+
+                                    @if(auth()->user() && auth()->user()->role === 'admin')
+                                        <a href="{{route('materiels.edit', $materiel->Id_materiel)}}" class="action-btn edit" title="Modifier">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" class="action-btn delete" data-bs-toggle="modal" data-bs-target="#Supprimer{{ $materiel->Id_materiel }}">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+
+                        {{-- Modal de suppression (Harmonisé) --}}
+                        @if(auth()->user() && auth()->user()->role === 'admin')
+                        <div class="modal fade" id="Supprimer{{ $materiel->Id_materiel }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+                                    <div class="modal-body text-center p-5">
+                                        <div class="delete-warning-icon mb-4">
+                                            <i class="bi bi-exclamation-octagon text-danger display-4"></i>
+                                        </div>
+                                        <h4 class="fw-bold mb-3">Supprimer ce matériel ?</h4>
+                                        <p class="text-muted">Le retrait du matériel <strong>{{ $materiel->type_materiel }}</strong> est irréversible.</p>
+                                        <div class="d-flex gap-2 justify-content-center mt-4">
+                                            <button type="button" class="btn btn-light px-4 rounded-pill" data-bs-dismiss="modal">Annuler</button>
+                                            <form action="{{ route('materiels.destroy', $materiel->Id_materiel) }}" method="POST">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="btn btn-danger px-4 rounded-pill">Confirmer</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
+                    @empty
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <div class="empty-state">
+                                    <i class="bi bi-pc-display display-1 text-light"></i>
+                                    <p class="mt-3 text-muted fw-medium">Aucun équipement dans le parc informatique.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Pagination --}}
         @if($materiels->hasPages())
-            <div class="card-footer bg-white border-top-0 py-4">
-                <div class="d-flex d-flex justify-content-center align-items-center flex-wrap gap-3">
-                    <div class="custom-pagination">
-                        {{ $materiels->appends(['search' => request('search')])->links() }}
-                    </div>
+            <div class="pagination-footer py-4 d-flex justify-content-center border-top">
+                <div class="custom-pagination">
+                    {{ $materiels->appends(['search' => request('search')])->links() }}
                 </div>
             </div>
         @endif
-
+    </div>
 </div>
+
 <style>
-
-    /* style pagi */
-    .custom-pagination .pagination {
-        margin-bottom: 0;
-        gap: 5px; 
+    :root {
+        --primary-color: #4e73df;
+        --primary-soft: #f1f4ff;
+        --bg-main: #f8f9fc;
+        --text-muted: #858796;
     }
 
+    body { background-color: var(--bg-main); font-family: 'Inter', sans-serif; }
 
-    .custom-pagination .page-link {
-        border: none;
-        border-radius: 8px !important;
-        padding: 8px 16px;
-        color: #4e73df;
-        background-color: #f8f9fc;
-        transition: all 0.3s ease;
-        font-weight: 500;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    /* Architecture des Cartes (Glassmorphism) */
+    .header-glass {
+        background: white !important;
+        border-radius: 20px !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05) !important;
     }
 
-
-    .custom-pagination .page-link:hover {
-        background-color: #4e73df;
-        color: white !important;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(78, 115, 223, 0.2);
+    .body-glass {
+        background: white !important;
+        border-radius: 20px !important;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.08) !important;
+        overflow: hidden;
+        border: 1px solid rgba(0,0,0,0.02);
     }
 
+    .icon-box { padding: 10px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; }
+    .bg-primary-soft { background-color: var(--primary-soft); }
 
-    .custom-pagination .page-item.active .page-link {
-        background-color: #4e73df;
-        color: white;
-        box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+    /* Barre de Recherche */
+    .search-wrapper { position: relative; width: 280px; }
+    .search-input {
+        border-radius: 50px !important;
+        padding-left: 40px !important;
+        background: var(--bg-main) !important;
+        border: 1px solid transparent !important;
+        font-size: 0.9rem;
+    }
+    .search-input:focus {
+        background: white !important;
+        border-color: var(--primary-color) !important;
+        box-shadow: 0 0 0 4px rgba(78, 115, 223, 0.1) !important;
+    }
+    .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+
+    .btn-add-custom { border-radius: 50px !important; padding: 8px 20px !important; font-weight: 600; transition: transform 0.2s; }
+    .btn-add-custom:hover { transform: scale(1.02); }
+
+    /* Tableau */
+    .table-custom thead th {
+        background: #fdfdff;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 1.5rem 1rem;
+        border-bottom: 1px solid #f1f1f1 !important;
     }
 
-
-    .custom-pagination .page-item.disabled .page-link {
-        background-color: #f1f3f9;
-        color: #b7c1d1;
+    .avatar-dynamic {
+        width: 45px; height: 45px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
+    /* Statuts */
+    .status-tag { display: inline-flex; align-items: center; padding: 6px 14px; border-radius: 50px; font-size: 0.85rem; font-weight: 600; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
+    .status-ok { background: #eafaf1; color: #27ae60; }
+    .status-ok .dot { background: #27ae60; box-shadow: 0 0 8px #27ae60; }
+    .status-error { background: #fff5f5; color: #e74c3c; }
+    .status-error .dot { background: #e74c3c; }
 
-    .custom-pagination .page-link aria-hidden {
-        font-weight: bold;
+    /* Actions */
+    .action-stack { display: flex; gap: 8px; justify-content: center; }
+    .action-btn {
+        width: 35px; height: 35px;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 10px; background: var(--bg-main);
+        text-decoration: none; border: none; transition: all 0.2s;
     }
+    .action-btn.view { color: var(--primary-color); }
+    .action-btn.edit { color: #f39c12; }
+    .action-btn.delete { color: #e74c3c; }
+    .action-btn:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); background: white; }
 
-    /* Phrase non */
-    .pagination nav .flex.items-center.justify-between div:first-child {
-    display: none !important;
-    }
+    /* Pagination */
+    .custom-pagination .page-link { border-radius: 12px !important; margin: 0 3px; border: none !important; background: #f8f9fc; color: var(--primary-color); font-weight: 600; }
+    .custom-pagination .page-item.active .page-link { background: var(--primary-color) !important; color: white; box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3); }
 
-    .custom-pagination nav div p {
-        display: none !important;
-    }
+    /* Clean Laravel pagination */
+    nav p.text-sm { display: none !important; }
+    .table-responsive::-webkit-scrollbar { display: none; }
+    .table-responsive { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
 @endsection

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Interventions; // Ne pas oublier l'import du modèle
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,12 +17,21 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View
-    {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
-    }
+public function edit(Request $request): View
+{
+    $user = $request->user();
+
+    // On récupère les interventions liées à l'email de l'utilisateur connecté
+    $interventions = Interventions::whereHas('techniciens', function($q) use ($user) {
+        // On compare l'email de la table techniciens avec l'email de l'User connecté
+        $q->where('techniciens.email_technicien', $user->email); 
+    })->latest()->get();
+
+    return view('profile.edit', [
+        'user' => $user,
+        'interventions' => $interventions,
+    ]);
+}
 
     /**
      * Update the user's profile information.

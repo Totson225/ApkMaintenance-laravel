@@ -41,6 +41,6 @@ class AdminspaceController extends Controller
         }
         
         $user->delete();
-        return back()->with('success', 'Utilisateur supprimé avec succès.');
+        return back()->with('success',"L'utilisateur " . $user->name .  "à été supprimé avec succès.");
     }
 }

@@ -26,7 +26,7 @@ class PieceRechangesController extends Controller
             }
 
             // pagination
-            $pieceRechanges = $query->paginate(7);
+            $pieceRechanges = $query->paginate(5);
 
             // vue retour
             return view('pieces.index', compact('pieceRechanges'));

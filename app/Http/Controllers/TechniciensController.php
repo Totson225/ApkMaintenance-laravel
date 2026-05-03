@@ -26,7 +26,7 @@ public function index(Request $request)
         });
     }
 
-    $techniciens = $query->paginate(7);
+    $techniciens = $query->paginate(5);
 
     return view('techniciens.index', compact('techniciens'));
 }

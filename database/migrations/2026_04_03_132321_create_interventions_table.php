@@ -20,8 +20,6 @@ return new class extends Migration
             $table->string('type_intervention');
             $table->foreignId('id_appareil');
             $table->foreignId('id_utilisateur');
-            // $table->foreignId('id_technicien');
-            // $table->foreignId('Id_materiel');
             $table->timestamps();
         });
     }

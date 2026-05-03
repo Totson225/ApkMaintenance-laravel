@@ -1,188 +1,168 @@
 @extends('layouts.app')
 
+@section('title', 'AppliMaintenance | Intervention')
+
 @section('content')
-<div class="container py-4">
+<div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-lg-10">
             
-            {{-- En-tête --}}
-            <div class="d-flex align-items-center mb-4">
-                <h4 class="mb-0 fw-bold text-primary">Enregistrer une intervention</h4>
+            {{-- En-tête avec bouton retour --}}
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div>
+                    <h3 class="fw-bold text-dark mb-0">
+                        <i class="bi bi-journals me-2"></i>Nouvelle Intervention
+                    </h3>
+                    <p class="text-muted small">Enregistrez les détails techniques de l'intervention de maintenance.</p>
+                </div>
+                <a href="{{ route('interventions.index') }}" class="btn btn-light rounded-pill shadow-sm px-3">
+                    <i class="bi bi-arrow-left me-2"></i>Retour
+                </a>
             </div>
 
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-4">
-                    <form action="{{ route('interventions.store') }}" method="post">
-                        @csrf
-                        
-                        <div class="row">
-                            {{-- Date Demande --}}
-                            <div class="col-md-6 mb-3">
-                                <label for="date_demande" class="form-label fw-bold small text-muted">DATE DEMANDE</label>
-                                <div class="input-group">
-                                    <input type="date" name="date_demande" id="date_demande" 
-                                        value="{{ old('date_demande', date('Y-m-d')) }}" 
-                                        class="form-control bg-light border-start-0 @error('date_demande') is-invalid @enderror">
+            <form action="{{ route('interventions.store') }}" method="post">
+                @csrf
+                
+                <div class="row g-4">
+                    {{-- Section 1 : Informations Générales --}}
+                    <div class="col-md-4">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold mb-3 small text-uppercase text-primary border-bottom pb-2">Planification</h5>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold small">Date de Demande</label>
+                                    <input type="date" name="date_demande" value="{{ old('date_demande', date('Y-m-d')) }}" 
+                                        class="form-control @error('date_demande') is-invalid @enderror">
                                 </div>
-                                @error('date_demande')
-                                    <div class="text-danger small mt-1">!!! Veuillez choisir une date</div>
-                                @enderror
-                            </div>
 
-                            {{-- Date Intervention --}}
-                            <div class="col-md-6 mb-3">
-                                <label for="date_intervention" class="form-label fw-bold small text-muted">DATE INTERVENTION</label>
-                                <div class="input-group">
-                                    <input type="date" name="date_intervention" id="date_intervention" 
-                                        value="{{ old('date_intervention', date('Y-m-d')) }}" 
-                                        class="form-control bg-light border-start-0 @error('date_intervention') is-invalid @enderror">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold small">Date d'Intervention</label>
+                                    <input type="date" name="date_intervention" value="{{ old('date_intervention', date('Y-m-d')) }}" 
+                                        class="form-control @error('date_intervention') is-invalid @enderror">
                                 </div>
-                                @error('date_intervention')
-                                    <div class="text-danger small mt-1">!!! Veuillez choisir une date</div>
-                                @enderror
-                            </div>
 
-                            {{-- Type Intervention --}}
-                            <div class="col-md-6 mb-3">
-                                <label for="type_intervention" class="form-label fw-bold small text-muted">TYPE D'INTERVENTION</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border-end-0">
-                                        <i class="bi bi-gear-wide-connected"></i> 
-                                    </span>
-                                    <select class="form-select bg-light border-start-0 @error('type_intervention') is-invalid @enderror" name="type_intervention" id="type_intervention">
-                                        <option selected disabled value="">Choisir...</option>
-                                        <option value="Corrective" {{ old('type_intervention') == 'Corrective' ? 'selected' : '' }}>Corrective (Panne)</option>
-                                        <option value="Préventive" {{ old('type_intervention') == 'Préventive' ? 'selected' : '' }}>Préventive (Entretien)</option> 
+                                <div class="mb-0">
+                                    <label class="form-label fw-semibold small">Type d'Intervention</label>
+                                    <select class="form-select @error('type_intervention') is-invalid @enderror" name="type_intervention">
+                                        <option selected disabled>Choisir...</option>
+                                        <option value="Corrective" {{ old('type_intervention') == 'Corrective' ? 'selected' : '' }}>🚨 Corrective (Panne)</option>
+                                        <option value="Préventive" {{ old('type_intervention') == 'Préventive' ? 'selected' : '' }}>🛠️ Préventive (Entretien)</option> 
                                     </select>
                                 </div>
-                                @error('type_intervention')
-                                    <div class="text-danger small mt-1">!!! Veuillez choisir un type</div>
-                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Section 2 : Acteurs & Matériel --}}
+                    <div class="col-md-8">
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold mb-3 small text-uppercase text-primary border-bottom pb-2">Assignation & Appareil</h5>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold small">Demandeur</label>
+                                        <select class="form-select select-search" name="id_utilisateur">
+                                            <option selected disabled>Qui a demandé ?</option>
+                                            @foreach($demandeurs as $demandeur)
+                                                <option value="{{ $demandeur->id_utilisateur }}">
+                                                    {{ $demandeur->nom_demandeur }} {{ $demandeur->prenom_demandeur }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold small">Appareil concerné</label>
+                                        <select class="form-select select-search" name="id_appareil">
+                                            <option selected disabled>Sélectionner l'appareil...</option>
+                                            @foreach($appareils as $appareil)
+                                                <option value="{{ $appareil->id_appareil }}">
+                                                    {{ $appareil->nom_appareil }} {{ $appareil->type_appareil }} ({{ $appareil->marque_appareil }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="mb-0">
+                                    <label class="form-label fw-semibold small">Technicien(s) en charge</label>
+                                    <select class="form-select select-multiple" name="techniciens[]" multiple>
+                                        @foreach($techniciens as $tech)
+                                            <option value="{{ $tech->id_technicien }}">
+                                                {{ $tech->nom_techniciens }} ({{ $tech->statut_tech }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <div class="form-text text-info small"><i class="bi bi-info-circle"></i> Plusieurs choix possibles.</div>
+                                </div>
                             </div>
                         </div>
 
-                        {{-- Sélection du Demandeur --}}
-                        <div class="mb-3">
-                            <label for="id_utilisateur" class="form-label fw-bold small text-muted">DEMANDEUR</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0">
-                                    <i class="bi bi-person-fill"></i>
-                                </span>
-                                <select class="form-select bg-light border-start-0 @error('id_utilisateur') is-invalid @enderror" name="id_utilisateur" id="id_utilisateur">
-                                    <option selected disabled value="">Sélectionner le demandeur...</option>
-                                    @foreach($demandeurs as $demandeur)
-                                        <option value="{{ $demandeur->id_utilisateur }}">
-                                            {{ $demandeur->nom_demandeur }} {{ $demandeur->prenom_demandeur }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            @error('id_utilisateur')
-                                <div class="text-danger small mt-1">!!! Veuillez sélectionner un demandeur</div>
-                            @enderror
-                        </div>
-
-                        {{-- Sélection de l'Appareil --}}
-                        <div class="mb-3">
-                            <label for="id_appareil" class="form-label fw-bold small text-muted">APPAREIL</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0">
-                                    <i class="bi bi-laptop"></i> {{-- Icône Matériel/Appareil --}}
-                                </span>
-                                <select class="form-select bg-light border-start-0 @error('id_appareil') is-invalid @enderror" name="id_appareil" id="id_appareil">
-                                    <option selected disabled value="">Sélectionner l'appareil...</option>
-                                    @foreach($appareils as $appareil)
-                                        <option value="{{ $appareil->id_appareil }}">
-                                            {{ $appareil->nom_appareil }} {{ $appareil->marque_appareil }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            @error('id_appareil')
-                                <div class="text-danger small mt-1">!!! Veuillez sélectionner un appareil</div>
-                            @enderror
-                        </div>
-
-                        {{-- Techniciens Assignés --}}
-                        <div class="mb-3">
-                            <label for="techniciens" class="form-label fw-bold small text-muted">TECHNICIENS ASSIGNÉS</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light"><i class="bi bi-person-badge"></i></span>
-                                <select class="form-select bg-light @error('techniciens') is-invalid @enderror" 
-                                        name="techniciens[]" id="techniciens" multiple>
-                                    @foreach($techniciens as $tech)
-                                        <option value="{{ $tech->id_technicien }}" 
-                                            {{ (is_array(old('techniciens')) && in_array($tech->id_technicien, old('techniciens'))) ? 'selected' : '' }}>
-                                            {{ $tech->nom_techniciens }} {{ $tech->prenom_techniciens }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            @error('techniciens')
-                                <div class="text-danger small mt-1">!!! Veuillez sélectionner au moins un technicien</div>
-                            @enderror
-                            <small class="text-muted">Maintenez Ctrl (ou Cmd) pour sélectionner plusieurs.</small>
-                        </div>
-
-                        {{-- Matériel Utilisé --}}
-                        <div class="mb-3">
-                            <label for="materiels" class="form-label fw-bold small text-muted">MATÉRIEL UTILISÉ</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light"><i class="bi bi-tools"></i></span>
-                                <select class="form-select bg-light @error('materiels') is-invalid @enderror" 
-                                        name="materiels[]" id="materiels" multiple>
-                                    @foreach($materiels as $mat)
-                                        <option value="{{ $mat->Id_materiel }}"
-                                            {{ (is_array(old('materiels')) && in_array($mat->Id_materiel, old('materiels'))) ? 'selected' : '' }}>
-                                            {{ $mat->type_materiel }} {{ $mat->marque }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            @error('materiels')
-                                <div class="text-danger small mt-1">!!! Veuillez sélectionner le matériel utilisé</div>
-                            @enderror
-                            <small class="text-muted">Maintenez Ctrl (ou Cmd) pour sélectionner plusieurs.</small>
-                        </div>
-
-                        {{-- Description de la Panne --}}
-                        <div class="mb-4">
-                            <label for="descript_panne" class="form-label fw-bold small text-muted">DESCRIPTION DE LA PANNE</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0 align-items-start pt-2">
-                                    <i class="bi bi-exclamation-triangle"></i> 
-                                </span>
-                                <textarea name="descript_panne" id="descript_panne" rows="3" 
-                                    placeholder="Expliquez le problème technique..." 
-                                    class="form-control bg-light border-start-0 @error('descript_panne') is-invalid @enderror">{{ old('descript_panne') }}</textarea>
-                            </div>
-                            @error('descript_panne')
-                                <div class="text-danger small mt-1">!!! Veuillez décrire la panne</div>
-                            @enderror
-                        </div>
-
-                        {{-- Solution Apportée --}}
-                        <div class="mb-4">
-                            <label for="solution_apportee" class="form-label fw-bold small text-muted">SOLUTION APPORTEE</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0 align-items-start pt-2">
-                                    <i class="bi bi-wrench-adjustable"></i> 
-                                </span>
-                                <textarea name="solution_apportee" id="solution_apportee" rows="3" 
-                                    placeholder="Expliquez comment vous avez résolu le problème..." 
-                                    class="form-control bg-light border-start-0 @error('solution_apportee') is-invalid @enderror">{{ old('solution_apportee') }}</textarea>
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold mb-3 small text-uppercase text-primary border-bottom pb-2">Ressources utilisées</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold small">Outillage / Matériel</label>
+                                        <select class="form-select select-multiple" name="materiels[]" multiple>
+                                            @foreach($materiels as $mat)
+                                                <option value="{{ $mat->Id_materiel }}">{{ $mat->type_materiel }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold small">Pièces de rechange</label>
+                                        <select class="form-select select-multiple" name="pieces[]" multiple>
+                                            @foreach($pieces as $pie)
+                                                <option value="{{ $pie->id_PRechange }}">{{ $pie->Nom }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-text text-info small"><i class="bi bi-info-circle"></i> Plusieurs choix possibles.</div>
+                                </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="d-grid shadow-sm">
-                            <button class="btn btn-primary btn-lg fw-bold" id="enregistrer" type="submit">
-                                <i class="bi bi-save me-2"></i>Enregistrer l'intervention
-                            </button>
+                    {{-- Section 3 : Détails Techniques --}}
+                    <div class="col-12">
+                        <div class="card shadow-sm border-0 pt-3">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-bold text-danger small"><i class="bi bi-bug me-1"></i>DESCRIPTION DE LA PANNE</label>
+                                        <textarea name="descript_panne" rows="4" class="form-control border-danger-subtle bg-light-subtle" placeholder="Décrivez le symptôme ou le problème constaté...">{{ old('descript_panne') }}</textarea>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-bold text-success small"><i class="bi bi-check-circle me-1"></i>SOLUTION APPORTÉE</label>
+                                        <textarea name="solution_apportee" rows="4" class="form-control border-success-subtle bg-light-subtle" placeholder="Détaillez les actions menées pour résoudre le problème...">{{ old('solution_apportee') }}</textarea>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 border-top pt-4 text-end">
+                                    <button type="reset" class="btn btn-light border me-2">Effacer</button>
+                                    <button type="submit" class="btn btn-primary btn-lg px-5 shadow">
+                                        <i class="bi bi-cloud-upload me-2"></i>Finaliser l'enregistrement
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </div>
+
+{{-- Style additionnel pour peaufiner l'apparence --}}
+<style>
+    .card { border-radius: 15px; transition: transform 0.2s; }
+    .form-control:focus, .form-select:focus { 
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+        border-color: #0d6efd;
+    }
+    .select-multiple { min-height: 100px; }
+    body { background-color: #f0f2f5; }
+</style>
 @endsection

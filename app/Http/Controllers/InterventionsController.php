@@ -7,6 +7,7 @@ use App\Models\Appareils;
 use App\Models\Demandeurs;
 use App\Models\Interventions;
 use App\Models\Materiels;
+use App\Models\PieceRechanges;
 use App\Models\Techniciens;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -36,7 +37,7 @@ class InterventionsController extends Controller
             }
 
             // pagination
-            $interventions = $query->paginate(7);
+            $interventions = $query->paginate(5);
 
             // vue retour
             return view('interventions.index', compact('interventions'));
@@ -51,8 +52,9 @@ class InterventionsController extends Controller
         $techniciens = Techniciens::all();
         $materiels = Materiels::all();
         $appareils = Appareils::all();
+        $pieces = PieceRechanges::all();
         $interventions=\App\Models\Interventions::all();
-        return view('interventions.create',compact('interventions', 'techniciens', 'materiels', 'appareils','demandeurs'));  
+        return view('interventions.create',compact('interventions', 'techniciens', 'pieces', 'materiels', 'appareils','demandeurs'));  
     }
 
     /**
@@ -68,8 +70,6 @@ class InterventionsController extends Controller
           'type_intervention'=>'required|string',
           'id_appareil'=>'required|exists:appareils,id_appareil',
           'id_utilisateur'=>'required|exists:demandeurs,id_utilisateur', 
-        //   'id_technicien'=>'required|exists:techniciens,id_technicien',
-        //   'Id_materiel'=>'required|exists:materiels,Id_materiel',
           
         ]);
 
@@ -112,8 +112,9 @@ class InterventionsController extends Controller
         $demandeurs = \App\Models\Demandeurs::all();
         $techniciens = Techniciens::all();
         $materiels = Materiels::all();
+        $pieces = PieceRechanges::all();
         $appareils = \App\Models\Appareils::all();  
-        return view('interventions.edit', compact('demandeurs', 'techniciens', 'materiels' ,'appareils','intervention'));
+        return view('interventions.edit', compact('demandeurs', 'techniciens', 'materiels', 'pieces' ,'appareils','intervention'));
     }
 
     /**
@@ -121,35 +122,36 @@ class InterventionsController extends Controller
      */
     public function update(Request $request, Interventions $intervention)
     {
-        $validated=$request->validate([
-          'date_demande'=>'required|date',
-          'date_intervention'=>'required|date',
-          'descript_panne'=>'required|string',
-          'solution_apportee'=>'nullable',
-          'type_intervention'=>'required|string',
-          'id_appareil'=>'required|exists:appareils,id_appareil',
-          'id_utilisateur'=>'required|exists:demandeurs,id_utilisateur',
-        //   'id_technicien'=>'required|exists:techniciens,id_technicien',
-        //   'Id_materiel'=>'required|exists:materiels,Id_materiel',  
+        $validated = $request->validate([
+        'date_demande'      => 'required|date',
+        'date_intervention' => 'required|date',
+        'descript_panne'    => 'required|string',
+        'solution_apportee' => 'nullable|string',
+        'type_intervention' => 'required|string',
+        'id_appareil'       => 'required|exists:appareils,id_appareil',
+        'id_utilisateur'    => 'required|exists:demandeurs,id_utilisateur',   
         ]);
 
+        $intervention->update($validated);
 
-       $intervention = Interventions::create($validated);
+        $intervention->techniciens()->sync($request->techniciens ?? []);
 
-        if ($request->has('techniciens')) {
-                $intervention->techniciens()->sync($request->techniciens);
-            }
-            
         if ($request->has('materiels')) {
-            foreach ($request->materiels as $materielId) {
-                $intervention->materiels()->sync($materielId, [
-                    'Deb_intervention' => now() 
-                ]);
+            $materielsData = [];
+            foreach ($request->materiels as $id) {
+                $materielsData[$id] = ['Deb_intervention' => now()];
             }
+            $intervention->materiels()->sync($materielsData);
+        } else {
+            $intervention->materiels()->sync([]);
         }
-       return Redirect()
-             ->route('interventions.index')
-             ->with( 'success','Intervention modifié avec succès !'); 
+
+        if ($request->has('pieces')) {
+                $intervention->pieces()->sync($request->pieces);
+            }
+        return redirect()
+                ->route('interventions.index')
+                ->with('success', 'Intervention modifiée avec succès !'); 
     }
 
     /**

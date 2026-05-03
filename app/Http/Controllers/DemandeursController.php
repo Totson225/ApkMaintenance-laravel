@@ -27,7 +27,7 @@ class DemandeursController extends Controller
             }
 
             // pagination
-            $demandeurs = $query->paginate(7);
+            $demandeurs = $query->paginate(5);
 
             // vue retour
             return view('demandeurs.index', compact('demandeurs'));

@@ -20,31 +20,39 @@ class DashbordController extends Controller
 
     public function index()
     {
-        // Interventions
+        // --- Statistiques Interventions ---
         $valeurParDefaut = "Aucune solution apportee"; 
         $inachevees = Interventions::where('solution_apportee', $valeurParDefaut)->count();
         $achevees = Interventions::where('solution_apportee', '!=', $valeurParDefaut)->count();
 
-        // Techniciens
-        $valeur = "Occuper"; 
-        $occupe = Techniciens::where('statut_tech', $valeur)->count();
-        $disponible = Techniciens::where('statut_tech', '!=', $valeur)->count();
+        // --- Statistiques Techniciens ---
+        $valeurTech = "Occuper"; 
+        $occupe = Techniciens::where('statut_tech', $valeurTech)->count();
+        $disponible = Techniciens::where('statut_tech', '!=', $valeurTech)->count();
 
-        // Appareils
-        $valeur = "Reparer";
-        $reparer = Appareils::where('etat_appareil', $valeur)->count();
-        $endommager = Appareils::where('etat_appareil', '!=', $valeur)->count();
+        // --- Statistiques Appareils ---
+        $valeurApp = "Reparer";
+        $reparer = Appareils::where('etat_appareil', $valeurApp)->count();
+        $endommager = Appareils::where('etat_appareil', '!=', $valeurApp)->count();
 
-        // Materiel
-        $valeur = "Operationnel";
-        $opp = Materiels::where('etat', $valeur)->count();
-        $ind = Materiels::where('etat', '!=', $valeur)->count();
+        // --- Statistiques Materiel ---
+        $valeurMat = "Operationnel";
+        $opp = Materiels::where('etat', $valeurMat)->count();
+        $ind = Materiels::where('etat', '!=', $valeurMat)->count();
 
-        // Pieces
+        // --- Statistiques Pieces ---
         $nbe = PieceRechanges::sum('Stock');
 
+        // Dernier appareil réparé et son technicien
+        $derniereIntervention = Interventions::where('solution_apportee', '!=', $valeurParDefaut)
+            ->with(['appareils', 'techniciens']) 
+            ->latest('updated_at')
+            ->first();
 
-        // Graphe
+        // Dernier arrivage (dernière pièce enregistrée)
+        $dernierePiece = PieceRechanges::latest()->first();
+
+        // --- Graphe ---
         $statsMois = Interventions::select(
             DB::raw('DAY(date_intervention) as jour'),
             DB::raw('count(*) as total')
@@ -61,12 +69,13 @@ class DashbordController extends Controller
             $donneesGraphique[] = $statsMois[$jour] ?? 0;
         }
 
-        return view('dashbord', compact(  'occupe', 'disponible',
-                                          'achevees', 'inachevees', 
-                                          'reparer', 'endommager',
-                                          'opp', 'ind', 'nbe', 
-                                          'jours','donneesGraphique'
-                                        )
-                    );
+        return view('dashbord', compact(
+            'occupe', 'disponible',
+            'achevees', 'inachevees', 
+            'reparer', 'endommager',
+            'opp', 'ind', 'nbe', 
+            'jours','donneesGraphique',
+            'derniereIntervention', 'dernierePiece' 
+        ));
     }
 }
